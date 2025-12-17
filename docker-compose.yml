@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  atr-grid-trader:
+    build: .
+    container_name: atr-grid-trader
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./grid_state.db:/app/grid_state.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - atr-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: atr-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - atr-grid-trader
+    restart: unless-stopped
+    networks:
+      - atr-network
+
+networks:
+  atr-network:
+    driver: bridge
+
+volumes:
+  logs:
+  data:

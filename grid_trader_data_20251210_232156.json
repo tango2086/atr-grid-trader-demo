@@ -1,0 +1,109 @@
+{
+  "timestamp": "2025-12-10T23:21:56.631345",
+  "etf_data": {
+    "sh510050": {
+      "code": "sh510050",
+      "name": "上证50",
+      "price": 3.132,
+      "bias": -0.1657529006757577,
+      "status": "OSCILLATION (震荡)",
+      "holdings": {
+        "volume": 6400,
+        "avg_cost": 3.1,
+        "available": 6400
+      },
+      "orders": [
+        "TradeOrder(direction='BUY', price=np.float64(3.1021224000000003), amount=600, type='LIMIT', desc='网格买1')",
+        "TradeOrder(direction='SELL', price=np.float64(3.1774776), amount=600, type='LIMIT', desc='网格卖1')"
+      ],
+      "warnings": [],
+      "new_alerts": 0,
+      "plan": "TradePlan(code='sh510050', current_price=np.float64(3.132), current_bias=np.float64(-0.1657529006757577), market_status='OSCILLATION (震荡)', target_pos_pct=0.55, suggested_orders=[TradeOrder(direction='BUY', price=np.float64(3.1021224000000003), amount=600, type='LIMIT', desc='网格买1'), TradeOrder(direction='SELL', price=np.float64(3.1774776), amount=600, type='LIMIT', desc='网格卖1')], warnings=[], risk_triggered=False, support=np.float64(3.086), resistance=np.float64(3.25))",
+      "df": "                   time   open   high    low  close   volume        amount  settelementPrice  openInterest  preClose  suspendFlag    ma_5    ma_20   bias_20    atr_14\ndate                                                                                                                                                                  \n20250716  1752595200000  2.855  2.866  2.839  2.850  4466359  1.273606e+09               0.0            15     2.855            0     NaN      NaN       NaN       NaN\n20250717  1752681600000  2.849  2.860  2.845  2.859  3816978  1.088783e+09               0.0            15     2.850            0     NaN      NaN       NaN       NaN\n20250718  1752768000000  2.864  2.889  2.862  2.884  6767310  1.948265e+09               0.0            15     2.859            0     NaN      NaN       NaN       NaN\n20250721  1753027200000  2.887  2.896  2.880  2.890  5735454  1.657056e+09               0.0            15     2.884            0     NaN      NaN       NaN       NaN\n20250722  1753113600000  2.892  2.916  2.879  2.914  6589763  1.911014e+09               0.0            15     2.890            0  2.8794      NaN       NaN       NaN\n...                 ...    ...    ...    ...    ...      ...           ...               ...           ...       ...          ...     ...      ...       ...       ...\n20251204  1764777600000  3.112  3.125  3.102  3.116  4306399  1.340650e+09               0.0            15     3.108            0  3.1192  3.14625 -0.961462  0.038929\n20251205  1764864000000  3.116  3.158  3.113  3.145  6637137  2.079987e+09               0.0            15     3.116            0  3.1256  3.14420  0.025444  0.039500\n20251208  1765123200000  3.152  3.178  3.151  3.164  7894104  2.500003e+09               0.0            15     3.145            0  3.1310  3.14235  0.688975  0.039786\n20251209  1765209600000  3.160  3.162  3.135  3.142  5570294  1.754741e+09               0.0            15     3.164            0  3.1350  3.14045  0.049356  0.039571\n20251210  1765296000000  3.138  3.142  3.113  3.132  5522261  1.724812e+09               0.0            15     3.142            0  3.1398  3.13720 -0.165753  0.039071\n\n[100 rows x 15 columns]"
+    },
+    "sh588090": {
+      "code": "sh588090",
+      "name": "科创50",
+      "price": 1.386,
+      "bias": 1.178961200131393,
+      "status": "OSCILLATION (震荡)",
+      "holdings": {
+        "volume": 18000,
+        "avg_cost": 1.11,
+        "available": 18000
+      },
+      "orders": [
+        "TradeOrder(direction='BUY', price=np.float64(1.3397142857142859), amount=1400, type='LIMIT', desc='网格买1')",
+        "TradeOrder(direction='SELL', price=np.float64(1.4166857142857143), amount=1400, type='LIMIT', desc='网格卖1')"
+      ],
+      "warnings": [],
+      "new_alerts": 0,
+      "plan": "TradePlan(code='sh588090', current_price=np.float64(1.386), current_bias=np.float64(1.178961200131393), market_status='OSCILLATION (震荡)', target_pos_pct=0.55, suggested_orders=[TradeOrder(direction='BUY', price=np.float64(1.3397142857142859), amount=1400, type='LIMIT', desc='网格买1'), TradeOrder(direction='SELL', price=np.float64(1.4166857142857143), amount=1400, type='LIMIT', desc='网格卖1')], warnings=[], risk_triggered=False, support=np.float64(1.308), resistance=np.float64(1.443))",
+      "df": "                   time   open   high    low  close   volume       amount  settelementPrice  openInterest  preClose  suspendFlag    ma_5    ma_20   bias_20    atr_14\ndate                                                                                                                                                                 \n20250716  1752595200000  1.027  1.039  1.025  1.028   804275   83003558.0               0.0            15     1.027            0     NaN      NaN       NaN       NaN\n20250717  1752681600000  1.027  1.037  1.023  1.036  2843693  293277523.0               0.0            15     1.028            0     NaN      NaN       NaN       NaN\n20250718  1752768000000  1.038  1.044  1.034  1.039   827847   85932874.0               0.0            15     1.036            0     NaN      NaN       NaN       NaN\n20250721  1753027200000  1.039  1.042  1.036  1.038   799176   83031767.0               0.0            15     1.039            0     NaN      NaN       NaN       NaN\n20250722  1753113600000  1.039  1.050  1.037  1.048  1071256  111972748.0               0.0            15     1.038            0  1.0378      NaN       NaN       NaN\n...                 ...    ...    ...    ...    ...      ...          ...               ...           ...       ...          ...     ...      ...       ...       ...\n20251204  1764777600000  1.346  1.365  1.330  1.364  1805660  243445310.0               0.0            15     1.346            0  1.3610  1.38105 -1.234568  0.033000\n20251205  1764864000000  1.363  1.369  1.341  1.365  2496115  338308680.0               0.0            15     1.364            0  1.3612  1.37645 -0.831850  0.032500\n20251208  1765123200000  1.366  1.399  1.366  1.390  1878756  260054755.0               0.0            15     1.365            0  1.3644  1.37355  1.197627  0.032857\n20251209  1765209600000  1.382  1.399  1.378  1.386  1809077  251207450.0               0.0            15     1.390            0  1.3702  1.37150  1.057237  0.032429\n20251210  1765296000000  1.377  1.391  1.357  1.386  1827955  250456805.0               0.0            15     1.386            0  1.3782  1.36985  1.178961  0.032071\n\n[100 rows x 15 columns]"
+    },
+    "sz159841": {
+      "code": "sz159841",
+      "name": "证券ETF",
+      "price": 1.093,
+      "bias": 0.8116583656151927,
+      "status": "OSCILLATION (震荡)",
+      "holdings": {
+        "volume": 17200,
+        "avg_cost": 1.17,
+        "available": 17200
+      },
+      "orders": [
+        "TradeOrder(direction='BUY', price=np.float64(1.0627142857142857), amount=1800, type='LIMIT', desc='网格买1')",
+        "TradeOrder(direction='SELL', price=np.float64(1.1060857142857143), amount=1800, type='LIMIT', desc='网格卖1')"
+      ],
+      "warnings": [],
+      "new_alerts": 0,
+      "plan": "TradePlan(code='sz159841', current_price=np.float64(1.093), current_bias=np.float64(0.8116583656151927), market_status='OSCILLATION (震荡)', target_pos_pct=0.55, suggested_orders=[TradeOrder(direction='BUY', price=np.float64(1.0627142857142857), amount=1800, type='LIMIT', desc='网格买1'), TradeOrder(direction='SELL', price=np.float64(1.1060857142857143), amount=1800, type='LIMIT', desc='网格卖1')], warnings=[], risk_triggered=False, support=np.float64(1.049), resistance=np.float64(1.133))",
+      "df": "                   time   open   high    low  close   volume       amount  settelementPrice  openInterest  preClose  suspendFlag    ma_5    ma_20   bias_20    atr_14\ndate                                                                                                                                                                 \n20250716  1752595200000  1.055  1.060  1.045  1.052  1893700  199109470.0               0.0            15     1.056            0     NaN      NaN       NaN       NaN\n20250717  1752681600000  1.053  1.060  1.049  1.057  2102006  221418101.0               0.0            15     1.052            0     NaN      NaN       NaN       NaN\n20250718  1752768000000  1.058  1.064  1.055  1.061  2013969  213489936.0               0.0            15     1.057            0     NaN      NaN       NaN       NaN\n20250721  1753027200000  1.061  1.078  1.056  1.075  2690373  288019325.0               0.0            15     1.061            0     NaN      NaN       NaN       NaN\n20250722  1753113600000  1.077  1.081  1.063  1.077  3285889  352778828.0               0.0            15     1.075            0  1.0644      NaN       NaN       NaN\n...                 ...    ...    ...    ...    ...      ...          ...               ...           ...       ...          ...     ...      ...       ...       ...\n20251204  1764777600000  1.054  1.062  1.049  1.056  2256740  238283781.0               0.0            15     1.053            0  1.0632  1.09180 -3.278989  0.015071\n20251205  1764864000000  1.055  1.091  1.054  1.081  5382812  578070382.0               0.0            15     1.056            0  1.0652  1.08945 -0.775621  0.016643\n20251208  1765123200000  1.099  1.120  1.098  1.103  7357950  816881186.0               0.0            15     1.081            0  1.0712  1.08760  1.415962  0.018643\n20251209  1765209600000  1.096  1.102  1.087  1.089  2473679  270565630.0               0.0            15     1.103            0  1.0764  1.08565  0.308571  0.018857\n20251210  1765296000000  1.088  1.096  1.080  1.093  2580450  280784637.0               0.0            15     1.089            0  1.0844  1.08420  0.811658  0.018071\n\n[100 rows x 15 columns]"
+    },
+    "sh512480": {
+      "code": "sh512480",
+      "name": "半导体",
+      "price": 1.4380000000000002,
+      "bias": 3.0935226009965406,
+      "status": "OSCILLATION (震荡)",
+      "holdings": {
+        "volume": 23000,
+        "avg_cost": 1.43,
+        "available": 23000
+      },
+      "orders": [
+        "TradeOrder(direction='BUY', price=np.float64(1.3805428571428573), amount=1400, type='LIMIT', desc='网格买1')",
+        "TradeOrder(direction='SELL', price=np.float64(1.472257142857143), amount=1400, type='LIMIT', desc='网格卖1')"
+      ],
+      "warnings": [],
+      "new_alerts": 0,
+      "plan": "TradePlan(code='sh512480', current_price=np.float64(1.4380000000000002), current_bias=np.float64(3.0935226009965406), market_status='OSCILLATION (震荡)', target_pos_pct=0.55, suggested_orders=[TradeOrder(direction='BUY', price=np.float64(1.3805428571428573), amount=1400, type='LIMIT', desc='网格买1'), TradeOrder(direction='SELL', price=np.float64(1.472257142857143), amount=1400, type='LIMIT', desc='网格卖1')], warnings=[], risk_triggered=False, support=np.float64(1.306), resistance=np.float64(1.4520000000000002))",
+      "df": "                   time   open   high    low  close    volume        amount  settelementPrice  openInterest  preClose  suspendFlag    ma_5    ma_20   bias_20    atr_14\ndate                                                                                                                                                                   \n20250716  1752595200000  1.023  1.041  1.022  1.025  14377663  1.481536e+09               0.0            15     1.022            0     NaN      NaN       NaN       NaN\n20250717  1752681600000  1.024  1.032  1.017  1.032  13765182  1.408496e+09               0.0            15     1.025            0     NaN      NaN       NaN       NaN\n20250718  1752768000000  1.033  1.046  1.027  1.034  16701428  1.729691e+09               0.0            15     1.032            0     NaN      NaN       NaN       NaN\n20250721  1753027200000  1.034  1.037  1.030  1.035  11433695  1.182260e+09               0.0            15     1.034            0     NaN      NaN       NaN       NaN\n20250722  1753113600000  1.035  1.044  1.030  1.037  16788458  1.741821e+09               0.0            15     1.035            0  1.0326      NaN       NaN       NaN\n...                 ...    ...    ...    ...    ...       ...           ...               ...           ...       ...          ...     ...      ...       ...       ...\n20251204  1764777600000  1.381  1.412  1.366  1.411   8412544  1.172053e+09               0.0            15     1.384            0  1.3996  1.39705  0.998533  0.039071\n20251205  1764864000000  1.404  1.412  1.383  1.406   8191309  1.147141e+09               0.0            15     1.411            0  1.4026  1.39430  0.839131  0.038571\n20251208  1765123200000  1.407  1.452  1.406  1.441  10296431  1.474029e+09               0.0            15     1.406            0  1.4076  1.39370  3.393844  0.039071\n20251209  1765209600000  1.431  1.450  1.426  1.436   6963218  1.000871e+09               0.0            15     1.441            0  1.4156  1.39405  3.009218  0.038714\n20251210  1765296000000  1.423  1.443  1.406  1.438   6816988  9.706043e+08               0.0            15     1.436            0  1.4264  1.39485  3.093523  0.038214\n\n[100 rows x 15 columns]"
+    },
+    "sh512760": {
+      "code": "sh512760",
+      "name": "芯片ETF",
+      "price": 1.5919999999999999,
+      "bias": 2.9022041238446086,
+      "status": "OSCILLATION (震荡)",
+      "holdings": {
+        "volume": 34000,
+        "avg_cost": 1.7306,
+        "available": 29000
+      },
+      "orders": [
+        "TradeOrder(direction='BUY', price=np.float64(1.5290857142857142), amount=1200, type='LIMIT', desc='网格买1')",
+        "TradeOrder(direction='SELL', price=np.float64(1.6309142857142855), amount=1200, type='LIMIT', desc='网格卖1')"
+      ],
+      "warnings": [],
+      "new_alerts": 0,
+      "plan": "TradePlan(code='sh512760', current_price=np.float64(1.5919999999999999), current_bias=np.float64(2.9022041238446086), market_status='OSCILLATION (震荡)', target_pos_pct=0.55, suggested_orders=[TradeOrder(direction='BUY', price=np.float64(1.5290857142857142), amount=1200, type='LIMIT', desc='网格买1'), TradeOrder(direction='SELL', price=np.float64(1.6309142857142855), amount=1200, type='LIMIT', desc='网格卖1')], warnings=[], risk_triggered=False, support=np.float64(1.45), resistance=np.float64(1.6179999999999999))",
+      "df": "                   time   open   high    low  close   volume       amount  settelementPrice  openInterest  preClose  suspendFlag    ma_5    ma_20   bias_20    atr_14\ndate                                                                                                                                                                 \n20250716  1752595200000  1.133  1.151  1.130  1.134  2490813  283981795.0               0.0            15     1.132            0     NaN      NaN       NaN       NaN\n20250717  1752681600000  1.132  1.142  1.124  1.141  2402883  271892479.0               0.0            15     1.134            0     NaN      NaN       NaN       NaN\n20250718  1752768000000  1.141  1.157  1.138  1.146  2774573  318270897.0               0.0            15     1.141            0     NaN      NaN       NaN       NaN\n20250721  1753027200000  1.146  1.148  1.141  1.146  2581165  295256672.0               0.0            15     1.146            0     NaN      NaN       NaN       NaN\n20250722  1753113600000  1.146  1.155  1.140  1.149  3030937  347814502.0               0.0            15     1.146            0  1.1432      NaN       NaN       NaN\n...                 ...    ...    ...    ...    ...      ...          ...               ...           ...       ...          ...     ...      ...       ...       ...\n20251204  1764777600000  1.530  1.564  1.512  1.563  1888844  291652010.0               0.0            15     1.534            0  1.5492  1.55135  0.750959  0.043714\n20251205  1764864000000  1.560  1.566  1.534  1.559  1518560  235791478.0               0.0            15     1.563            0  1.5532  1.54790  0.717101  0.043143\n20251208  1765123200000  1.560  1.607  1.559  1.596  2285431  362454330.0               0.0            15     1.559            0  1.5590  1.54675  3.184096  0.043500\n20251209  1765209600000  1.582  1.606  1.577  1.590  1669651  265745182.0               0.0            15     1.596            0  1.5684  1.54665  2.802832  0.043357\n20251210  1765296000000  1.580  1.596  1.557  1.592  1528209  240705161.0               0.0            15     1.590            0  1.5800  1.54710  2.902204  0.042429\n\n[100 rows x 15 columns]"
+    }
+  },
+  "summary": {
+    "total_capital": 200000,
+    "total_value": 150994.4
+  }
+}

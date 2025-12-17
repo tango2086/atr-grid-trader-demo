@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIAS-ATR 智能网格交易</title>
+    <!-- 引入 ECharts (本地文件，避免CDN网络问题) -->
+    <script src="/static/echarts.min.js?v=5.4.3"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-card-hover: rgba(30, 41, 59, 0.9);
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 侧边导航 */
+        .sidebar {
+            width: 240px;
+            background: rgba(15, 23, 42, 0.9);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: fixed;
+            height: 100vh;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 32px;
+            max-width: 1600px;
+        }
+
+        /* 顶部状态栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* 仪表盘卡片 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ETF 网格 */
+        .etf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .etf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            backdrop-filter: blur(20px);
+        }
+
+        .etf-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .etf-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .etf-title h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .etf-title span {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .etf-body {
+            padding: 20px;
+        }
+
+        .etf-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .etf-stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .etf-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .etf-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* 交易日志表格 */
+        .trade-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .trade-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .trade-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trade-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary:hover {
+            background: #5855f0;
+        }
+
+        /* 状态标签 */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.deep {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .badge.gold {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .badge.osc {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge.reduce {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+        }
+
+        .badge.escape {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 1000px;
+            border: 1px solid var(--border);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #klineChart {
+            width: 100%;
+            height: 500px;
+            padding: 20px;
+        }
+
+        /* 提醒横幅 */
+        .alert-banner {
+            background: linear-gradient(135deg, var(--warning), #f97316);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 颜色辅助 */
+        .text-up {
+            color: var(--danger);
+        }
+
+        .text-down {
+            color: var(--success);
+        }
+
+        .bg-up {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .bg-down {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        /* 交易弹窗 */
+        .trade-form {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-buy {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-sell {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* 通知 Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            transform: translateX(200%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* 移动端响应式适配 */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                top: auto;
+                flex-direction: row;
+                border-right: none;
+                border-top: 1px solid var(--border);
+                justify-content: space-around;
+                align-items: center;
+                padding: 8px;
+                z-index: 1000;
+                background: rgba(15, 23, 42, 0.98);
+                /* 更不透明的背景 */
+            }
+
+            .logo {
+                display: none;
+            }
+
+            .nav-menu {
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .nav-item {
+                flex-direction: column;
+                font-size: 11px;
+                padding: 6px;
+                gap: 4px;
+                border-radius: 8px;
+                white-space: nowrap;
+            }
+
+            /* 隐藏侧边栏底部的系统状态，避免占用底部导航空间 */
+            .sidebar>div:last-child {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-bottom: 70px;
+                /* 为底部导航留出空间 */
+                padding: 16px;
+                width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .header>div {
+                width: 100%;
+            }
+
+            .refresh-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+                /* 移动端一行显示两个卡片 */
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .etf-grid {
+                grid-template-columns: 1fr;
+                /* 移动端 ETF 卡片单列显示 */
+            }
+
+            .etf-actions {
+                flex-wrap: wrap;
+            }
+
+            .toast {
+                bottom: 80px;
+                /* 避免遮挡底部导航 */
+                right: 20px;
+                left: 20px;
+                width: auto;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            🤖 BIAS-ATR PRO
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="showPage('overview')">📊 概览监控</div>
+            <div class="nav-item" onclick="showPage('tradeLog')">📝 交易日志</div>
+            <div class="nav-item" onclick="showPage('alertHistory')">🔔 提醒历史</div>
+            <div class="nav-item" onclick="alert('功能开发中...')">⚙️ 系统设置</div>
+        </div>
+
+        <div style="margin-top: auto; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">系统状态</div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                <span>🔌 交易接口</span>
+                <span id="traderStatus">检查中...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <!-- 概览页面 -->
+        <div id="overview-page">
+            <!-- 头部 -->
+            <div class="header">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">市场概览</h1>
+                    <div style="color: var(--text-secondary); font-size: 14px;">
+                        数据源: <span id="dataSource" style="color: var(--primary)">--</span>
+                        | 更新: <span id="lastUpdate">--</span>
+                    </div>
+                </div>
+                <button class="refresh-btn" onclick="refresh()">
+                    🔄 刷新数据
+                </button>
+            </div>
+
+            <!-- 提醒横幅 -->
+            <div class="alert-banner" id="tradeBanner">
+                <div style="font-size: 24px;">🔔</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">价格触发网格提醒</div>
+                    <div style="font-size: 14px; opacity: 0.9;" id="bannerText">--</div>
+                </div>
+            </div>
+
+            <!-- 核心指标卡片 -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label">总资产</div>
+                    <div class="stat-value" id="totalCapital">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">总盈亏</div>
+                    <div class="stat-value" id="totalProfit">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">持仓市值</div>
+                    <div class="stat-value" id="totalValue">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">仓位比例</div>
+                    <div class="stat-value" id="positionPct">--</div>
+                </div>
+            </div>
+
+            <!-- ETF 网格视图 -->
+            <div class="etf-grid" id="etfGrid">
+                <!-- 动态生成的内容 -->
+                <div style="color: var(--text-secondary); grid-column: 1/-1; text-align: center; padding: 40px;">
+                    加载中...
+                </div>
+            </div>
+        </div>
+
+        <!-- 交易日志页面 -->
+        <div id="trade-log-page" style="display: none;">
+            <div class="header">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">交易日志</h1>
+                    <div style="color: var(--text-secondary); font-size: 14px;">
+                        实时交易记录
+                    </div>
+                </div>
+                <button class="refresh-btn" onclick="loadTradeHistory()">
+                    🔄 刷新
+                </button>
+            </div>
+
+            <div class="trade-log-container">
+                <div id="tradeLogContent"
+                    style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">加载中...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 提醒历史页面 -->
+        <div id="alert-history-page" style="display: none;">
+            <div class="header">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">提醒历史</h1>
+                    <div style="color: var(--text-secondary); font-size: 14px;">
+                        价格提醒记录
+                    </div>
+                </div>
+                <button class="refresh-btn" onclick="loadAlertHistory()">
+                    🔄 刷新
+                </button>
+            </div>
+
+            <div class="trade-log-container">
+                <div id="alertHistoryContent"
+                    style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图表模态框 -->
+    <div class="modal-overlay" id="chartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="chartTitle" style="font-size: 20px;">--</h2>
+                    <span id="chartSubtitle" style="color: var(--text-secondary); font-size: 14px;">--</span>
+                </div>
+                <button class="close-btn" onclick="closeModal('chartModal')">&times;</button>
+            </div>
+            <div id="klineChart"></div>
+        </div>
+    </div>
+
+    <!-- 交易模态框 -->
+    <div class="modal-overlay" id="tradeModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>快速交易</h2>
+                <button class="close-btn" onclick="closeModal('tradeModal')">&times;</button>
+            </div>
+            <div class="trade-form">
+                <div class="form-group">
+                    <label class="form-label">ETF 名称</label>
+                    <input type="text" id="tradeName" class="form-control" readonly style="opacity: 0.5">
+                    <input type="hidden" id="tradeCode">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">交易方向</label>
+                    <select id="tradeDir" class="form-control">
+                        <option value="BUY">🟢 买入</option>
+                        <option value="SELL">🔴 卖出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">价格</label>
+                    <input type="number" id="tradePrice" class="form-control" step="0.001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">数量</label>
+                    <input type="number" id="tradeVol" class="form-control" step="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">预估金额: <span id="tradeAmount"
+                            style="color: var(--primary)">¥0</span></label>
+                </div>
+                <button class="btn-submit" id="tradeSubmitBtn" onclick="submitTrade()">确认下单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">✅</span>
+        <span id="toastMsg">操作成功</span>
+    </div>
+
+    <script>
+        // 全局状态
+        let myChart = null;
+        let etfDataMap = {};
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            loadData();
+            setInterval(loadData, 3000); // 3秒刷新
+        });
+
+        // 页面切换功能
+        function showPage(pageName) {
+            // 隐藏所有页面
+            document.getElementById('overview-page').style.display = 'none';
+            document.getElementById('trade-log-page').style.display = 'none';
+            document.getElementById('alert-history-page').style.display = 'none';
+
+            // 移除所有导航项的活动状态
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // 显示选定的页面并激活对应的导航项
+            if (pageName === 'overview') {
+                document.getElementById('overview-page').style.display = 'block';
+                document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+            } else if (pageName === 'tradeLog') {
+                document.getElementById('trade-log-page').style.display = 'block';
+                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+                loadTradeHistory(); // 加载交易历史
+            } else if (pageName === 'alertHistory') {
+                document.getElementById('alert-history-page').style.display = 'block';
+                document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+                loadAlertHistory(); // 加载提醒历史
+            }
+        }
+
+        // 加载交易历史
+        async function loadTradeHistory() {
+            try {
+                const res = await fetch('/api/trade_history?limit=100');
+                const data = await res.json();
+
+                const container = document.getElementById('tradeLogContent');
+                if (data.success) {
+                    if (data.trades && data.trades.length > 0) {
+                        container.innerHTML = `
+                            <div style="overflow-x: auto;">
+                                <table class="trade-table">
+                                    <thead>
+                                        <tr>
+                                            <th>时间</th>
+                                            <th>代码</th>
+                                            <th>方向</th>
+                                            <th>价格</th>
+                                            <th>数量</th>
+                                            <th>盈亏</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.trades.map(trade => `
+                                            <tr>
+                                                <td>${trade.timestamp ? trade.timestamp.substring(0, 19).replace('T', ' ') : '--'}</td>
+                                                <td>${trade.code || '--'}</td>
+                                                <td>${trade.direction === 'BUY' ? '🟢 买入' : (trade.direction === 'SELL' ? '🔴 卖出' : trade.direction)}</td>
+                                                <td>${trade.price ? trade.price.toFixed(3) : '--'}</td>
+                                                <td>${trade.volume || '--'}</td>
+                                                <td>${trade.realized_pnl !== null && trade.realized_pnl !== undefined ?
+                                (trade.realized_pnl >= 0 ? '+' : '') + trade.realized_pnl.toFixed(2) : '--'}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">暂无交易记录</div>';
+                    }
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);">加载失败: ' + data.message + '</div>';
+                }
+            } catch (err) {
+                console.error('加载交易历史失败:', err);
+                document.getElementById('tradeLogContent').innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);">加载失败: ' + err.message + '</div>';
+            }
+        }
+
+        // 加载提醒历史
+        async function loadAlertHistory() {
+            try {
+                const res = await fetch('/api/alerts?hours=168'); // 获取最近7天的提醒
+                const data = await res.json();
+
+                const container = document.getElementById('alertHistoryContent');
+                if (data.success !== false) { // alerts API doesn't follow the same pattern
+                    if (data.alerts && data.alerts.length > 0) {
+                        // 按时间倒序排列，最新的在最上面
+                        const sortedAlerts = data.alerts.sort((a, b) => {
+                            return new Date(b.timestamp) - new Date(a.timestamp);
+                        });
+
+                        container.innerHTML = `
+                            <div style="overflow-x: auto;">
+                                <table class="trade-table">
+                                    <thead>
+                                        <tr>
+                                            <th>时间</th>
+                                            <th>代码</th>
+                                            <th>类型</th>
+                                            <th>当前价格</th>
+                                            <th>目标价格</th>
+                                            <th>数量</th>
+                                            <th>消息</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${sortedAlerts.map(alert => `
+                                            <tr>
+                                                <td>${new Date(alert.timestamp).toLocaleString('zh-CN')}</td>
+                                                <td>${alert.code}</td>
+                                                <td>${alert.alert_type === 'BUY_TOUCH' ? '🟢 买入提醒' : '🔴 卖出提醒'}</td>
+                                                <td>${alert.price ? alert.price.toFixed(3) : '--'}</td>
+                                                <td>${alert.target_price ? alert.target_price.toFixed(3) : '--'}</td>
+                                                <td>${alert.amount || '--'}</td>
+                                                <td>${alert.message}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">暂无提醒记录</div>';
+                    }
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);">加载失败: ' + data.message + '</div>';
+                }
+            } catch (err) {
+                console.error('加载提醒历史失败:', err);
+                document.getElementById('alertHistoryContent').innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);">加载失败: ' + err.message + '</div>';
+            }
+        }
+
+        // 初始化图表实例
+        function initChart() {
+            myChart = echarts.init(document.getElementById('klineChart'));
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        // 加载数据
+        async function loadData() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                updateHeader(data);
+                updateCards(data.summary);
+                renderEtfGrid(data.etf_list);
+                updateAlerts(data.alerts);
+                updateTraderStatus();
+
+                // 保存数据供其他函数使用
+                data.etf_list.forEach(etf => {
+                    etfDataMap[etf.code] = etf;
+                });
+
+            } catch (err) {
+                console.error('加载失败', err);
+            }
+        }
+
+        // 更新头部
+        function updateHeader(data) {
+            document.getElementById('dataSource').textContent = data.data_source;
+            document.getElementById('lastUpdate').textContent = data.timestamp;
+        }
+
+        // 更新交易接口状态
+        async function updateTraderStatus() {
+            try {
+                const res = await fetch('/api/trader/status');
+                const status = await res.json();
+                const el = document.getElementById('traderStatus');
+                if (status.connected) {
+                    el.innerHTML = '<span style="color:var(--success)">● 已连接</span>';
+                } else if (!status.has_trader) {
+                    el.innerHTML = '<span style="color:var(--warning)">● 未安装</span>';
+                } else {
+                    el.innerHTML = '<span style="color:var(--danger)">● 断开</span>';
+                }
+            } catch (e) { }
+        }
+
+        // 更新核心指标
+        function updateCards(s) {
+            document.getElementById('totalCapital').textContent = '¥' + Math.round(s.total_capital).toLocaleString();
+            document.getElementById('totalValue').textContent = '¥' + Math.round(s.total_value).toLocaleString();
+
+            const profitEl = document.getElementById('totalProfit');
+            const sign = s.total_profit >= 0 ? '+' : '';
+            profitEl.textContent = sign + '¥' + Math.round(s.total_profit).toLocaleString();
+            profitEl.style.color = s.total_profit >= 0 ? 'var(--success)' : 'var(--danger)';
+
+            document.getElementById('positionPct').textContent = s.position_pct.toFixed(1) + '%';
+        }
+
+        // 渲染 ETF 网格
+        function renderEtfGrid(list) {
+            const container = document.getElementById('etfGrid');
+
+            // 如果已经在拖动或交互，暂时不更新DOM防止闪烁（可优化点）
+
+            container.innerHTML = list.map(etf => {
+                const biasClass = etf.bias >= 0 ? 'text-up' : 'text-down';
+                const pnl = (etf.price - etf.holdings.avg_cost) * etf.holdings.volume;
+                const pnlClass = pnl >= 0 ? 'text-up' : 'text-down';
+
+                // 订单标签
+                const orderTags = etf.orders.slice(0, 3).map(o =>
+                    `<span class="badge ${o.direction === 'BUY' ? 'bg-down' : 'bg-up'}">${o.direction === 'BUY' ? '买' : '卖'} ${o.price.toFixed(3)}</span>`
+                ).join('');
+
+                return `
+                <div class="etf-card">
+                    <div class="etf-header">
+                        <div class="etf-title">
+                            <h3>${etf.name}</h3>
+                            <span>${etf.code}</span>
+                        </div>
+                        <div style="text-align: right">
+                            <div style="font-size: 20px; font-weight: 700;">${etf.price.toFixed(3)}</div>
+                            <div class="${biasClass}" style="font-size: 13px;">BIAS: ${etf.bias.toFixed(2)}%</div>
+                        </div>
+                    </div>
+                    <div class="etf-body">
+                        <div class="etf-stats">
+                            <div class="etf-stat-item">
+                                <span style="font-size:12px; color:var(--text-secondary)">持仓</span>
+                                <span class="etf-stat-value">${etf.holdings.volume.toLocaleString()}</span>
+                            </div>
+                            <div class="etf-stat-item">
+                                <span style="font-size:12px; color:var(--text-secondary)">盈亏</span>
+                                <span class="etf-stat-value ${pnlClass}">${pnl > 0 ? '+' : ''}${Math.round(pnl)}</span>
+                            </div>
+                            <div class="etf-stat-item">
+                                <span style="font-size:12px; color:var(--text-secondary)">状态</span>
+                                <div>${getStatusBadge(etf.status)}</div>
+                            </div>
+                            <div class="etf-stat-item">
+                                <span style="font-size:12px; color:var(--text-secondary)">目标</span>
+                                <div>${etf.target_pos.toFixed(0)}%</div>
+                             </div>
+                             <div class="etf-stat-item">
+                                <span style="font-size:12px; color:var(--text-secondary)">成本</span>
+                                <div>${etf.holdings.avg_cost.toFixed(3)}</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px; display: flex; gap: 4px; flex-wrap: wrap;">
+                            ${orderTags || '<span style="font-size:12px; color:var(--text-secondary)">暂无操作建议</span>'}
+                        </div>
+
+                        <!-- [NEW] 显示警告信息 -->
+                        ${etf.warnings && etf.warnings.length > 0 ?
+                        `<div style="margin-bottom: 12px; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; font-size: 12px; color: var(--danger);">
+                                ${etf.warnings.map(w => `<div>⚠️ ${w}</div>`).join('')}
+                            </div>`
+                        : ''
+                    }
+
+                        <div class="etf-actions">
+                            <button class="action-btn primary" onclick="showChart('" + etf.code + "')">📈 K线分析</button>
+                            <button class="action-btn" onclick="openTrade('" + etf.code + "', 'BUY')">买入</button>
+                            <button class="action-btn" onclick="openTrade('" + etf.code + "', 'SELL')">卖出</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            if (status.includes('DEEP')) return '<span class="badge deep">🟢 深坑机会</span>';
+            if (status.includes('GOLD')) return '<span class="badge gold">🟡 黄金区间</span>';
+            if (status.includes('OSCILLATION')) return '<span class="badge osc">🔵 震荡持有</span>';
+            if (status.includes('REDUCE')) return '<span class="badge reduce">🟠 减持区间</span>';
+            return '<span class="badge escape">🔴 逃顶区域</span>';
+        }
+
+        function updateAlerts(alerts) {
+            const banner = document.getElementById('tradeBanner');
+            if (alerts.new_count > 0) {
+                banner.style.display = 'flex';
+                document.getElementById('bannerText').textContent =
+                    `${alerts.new_count} 个最新交易信号待处理`;
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        // 显示图表
+        async function showChart(code) {
+            const modal = document.getElementById('chartModal');
+            modal.classList.add('active');
+
+            // [FIX] 等待模态框显示动画完成后重置图表尺寸
+            setTimeout(() => {
+                if (myChart) myChart.resize();
+            }, 100);
+
+            const etf = etfDataMap[code];
+            document.getElementById('chartTitle').textContent = `${etf.name} (${code})`;
+            document.getElementById('chartSubtitle').textContent = `BIAS: ${etf.bias.toFixed(2)}% | 状态: ${etf.status}`;
+
+            myChart.showLoading();
+
+            try {
+                // 获取K线数据
+                const res = await fetch(`/api/kline/${code}?count=100`);
+                const json = await res.json();
+
+                if (!json.success) throw new Error(json.message);
+
+                const data = json.data;
+                const dates = data.map(i => i.date);
+                const klineData = data.map(i => [i.open, i.close, i.low, i.high]);
+                const biasData = data.map(i => i.bias);
+                const ma20Data = data.map(i => i.ma20);
+
+                const gridInfo = json.grid || { orders: [], active_pairs: [] };
+
+                // 构建标线数据
+                const markLineData = [];
+
+                // 1. 建议订单 (实线/粗)
+                gridInfo.orders.forEach(o => {
+                    const color = o.direction === 'BUY' ? '#10b981' : '#ef4444';
+                    markLineData.push({
+                        yAxis: o.price,
+                        label: {
+                            formatter: `${o.direction === 'BUY' ? '买' : '卖'}: ${o.price.toFixed(3)}`,
+                            color: color,
+                            position: 'end'
+                        },
+                        lineStyle: { color: color, type: 'solid', width: 2 }
+                    });
+                });
+
+                // 2. 持仓配对 (虚线/细)
+                gridInfo.active_pairs.forEach(p => {
+                    // 目标卖出线
+                    markLineData.push({
+                        yAxis: p.target_sell_price,
+                        label: {
+                            formatter: `🎯目标: ${p.target_sell_price.toFixed(3)}`,
+                            color: '#fbbf24',
+                            position: 'start',
+                            fontSize: 10
+                        },
+                        lineStyle: { color: '#fbbf24', type: 'dashed', width: 1, opacity: 0.6 }
+                    });
+                    // 买入成本线
+                    markLineData.push({
+                        yAxis: p.buy_price,
+                        label: {
+                            formatter: `🔒持仓: ${p.buy_price.toFixed(3)}`,
+                            color: '#94a3b8',
+                            position: 'start',
+                            fontSize: 10
+                        },
+                        lineStyle: { color: '#94a3b8', type: 'dotted', width: 1, opacity: 0.4 }
+                    });
+                });
+
+                const option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'cross' }
+                    },
+                    grid: [
+                        { left: '5%', right: '5%', height: '50%' },
+                        { left: '5%', right: '5%', top: '65%', height: '25%' }
+                    ],
+                    xAxis: [
+                        { type: 'category', data: dates, scale: true },
+                        { type: 'category', gridIndex: 1, data: dates, show: false }
+                    ],
+                    yAxis: [
+                        { scale: true, splitLine: { show: false }, axisLabel: { color: '#94a3b8' } },
+                        { scale: true, gridIndex: 1, splitLine: { show: false }, axisLabel: { color: '#94a3b8' } }
+                    ],
+                    series: [
+                        {
+                            type: 'candlestick',
+                            data: klineData,
+                            itemStyle: {
+                                color: '#ef4444',
+                                color0: '#10b981',
+                                borderColor: '#ef4444',
+                                borderColor0: '#10b981'
+                            },
+                            markLine: {
+                                symbol: ['none', 'none'],
+                                data: markLineData,
+                                silent: true
+                            }
+                        },
+                        {
+                            name: 'MA20',
+                            type: 'line',
+                            data: ma20Data,
+                            smooth: true,
+                            lineStyle: { opacity: 0.5 }
+                        },
+                        {
+                            name: 'BIAS',
+                            type: 'line',
+                            xAxisIndex: 1,
+                            yAxisIndex: 1,
+                            data: biasData,
+                            itemStyle: { color: '#6366f1' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(99, 102, 241, 0.5)' },
+                                    { offset: 1, color: 'rgba(99, 102, 241, 0.0)' }
+                                ])
+                            }
+                        }
+                    ]
+                };
+
+                myChart.setOption(option);
+            } catch (err) {
+                alert('加载图表失败: ' + err.message);
+            } finally {
+                myChart.hideLoading();
+            }
+        }
+
+        // 交易功能
+        function openTrade(code, dir) {
+            const etf = etfDataMap[code];
+            document.getElementById('tradeCode').value = code;
+            document.getElementById('tradeName').value = etf.name;
+            document.getElementById('tradeDir').value = dir;
+
+            // 查找建议价格
+            const suggestOrder = etf.orders.find(o => o.direction === dir);
+            document.getElementById('tradePrice').value = suggestOrder ? suggestOrder.price : etf.price;
+            document.getElementById('tradeVol').value = suggestOrder ? suggestOrder.amount : 100;
+
+            updateTradeUI();
+            document.getElementById('tradeModal').classList.add('active');
+        }
+
+        function updateTradeUI() {
+            const p = parseFloat(document.getElementById('tradePrice').value) || 0;
+            const v = parseFloat(document.getElementById('tradeVol').value) || 0;
+            document.getElementById('tradeAmount').textContent = '¥' + (p * v).toFixed(2);
+
+            const dir = document.getElementById('tradeDir').value;
+            const btn = document.getElementById('tradeSubmitBtn');
+            btn.className = `btn-submit ${dir === 'BUY' ? 'btn-buy' : 'btn-sell'}`;
+            btn.textContent = dir === 'BUY' ? '确认买入' : '确认卖出';
+        }
+
+        // 监听输入变化
+        document.getElementById('tradePrice').addEventListener('input', updateTradeUI);
+        document.getElementById('tradeVol').addEventListener('input', updateTradeUI);
+        document.getElementById('tradeDir').addEventListener('change', updateTradeUI);
+
+        async function submitTrade() {
+            const btn = document.getElementById('tradeSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = '提交中...';
+
+            try {
+                const res = await fetch('/api/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        code: document.getElementById('tradeCode').value,
+                        direction: document.getElementById('tradeDir').value,
+                        price: parseFloat(document.getElementById('tradePrice').value),
+                        volume: parseInt(document.getElementById('tradeVol').value)
+                    })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast('下单成功！', 'success');
+                    closeModal('tradeModal');
+                    refresh();
+                } else {
+                    showToast('失败: ' + json.message, 'error');
+                }
+            } catch (err) {
+                showToast('网络错误');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // 辅助功能
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function refresh() {
+            fetch('/api/refresh').then(loadData);
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            document.getElementById('toastIcon').textContent = type === 'success' ? '✅' : '❌';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.sqlite3
+.env
+venv/
+ENV/
+.vscode/
+.idea/
+.DS_Store
+
+# Build directories
+build/
+dist/
+*.egg-info/
+
+# Log files
+logs/
+*.log
+
+# Data files
+data/
+*.csv
+*.json
+
+# Jupyter Notebook
+.ipynb_checkpoints/
